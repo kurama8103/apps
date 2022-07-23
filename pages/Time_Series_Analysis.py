@@ -74,7 +74,7 @@ def tsa_render():
 @st.cache(show_spinner=False)
 def qs_html(df, download_filename):
     qs.reports.html(df, rf=0., title=df.name,
-                    #download_filename=download_filename, 
+                    download_filename=download_filename, 
                     output='./tmp/')
 
     with open(download_filename) as f:
