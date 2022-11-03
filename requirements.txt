@@ -9,4 +9,4 @@ folium
 -e git+https://github.com/kurama8103/gpxdf.git#egg=gpxdf
 quantstats
 scikit-learn
-pypfopt
+pyportfolioopt
