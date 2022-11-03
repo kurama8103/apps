@@ -27,17 +27,17 @@ def tdnet_render():
         if st.button('Download PDFs (TOP 10 files)'):
             with st.spinner():
                 file=download(td_)
-                link = b64_file_to_href(file,'b')
                 st.download_button('download',file)
-                st.markdown(link, unsafe_allow_html=True)
+                # link = b64_file_to_href(file,'b')
+                # st.markdown(link, unsafe_allow_html=True)
 
-                import streamlit.components.v1 as stc
-                import base64
-                src = base64.b64encode(file).decode()
-                stc.html(
-                "<script>window.open(\
-                    'data:application/zip;base64,{}')</script>".format(src)
-                )
+                # import streamlit.components.v1 as stc
+                # import base64
+                # src = base64.b64encode(file).decode()
+                # stc.html(
+                # "<script>window.open(\
+                #     'data:application/zip;base64,{}')</script>".format(src)
+                # )
                 
 
 @st.cache(allow_output_mutation=True,show_spinner=False)
