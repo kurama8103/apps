@@ -10,3 +10,4 @@ folium
 quantstats
 scikit-learn
 pyportfolioopt
+japanize_matplotlib
