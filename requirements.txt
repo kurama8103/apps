@@ -8,5 +8,5 @@ streamlit_folium
 folium
 -e git+https://github.com/kurama8103/gpxdf.git#egg=gpxdf
 quantstats
-sklearn
+scikit-learn
 pypfopt
