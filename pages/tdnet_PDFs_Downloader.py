@@ -27,7 +27,7 @@ def tdnet_render():
         if st.button('Download PDFs (TOP 10 files)'):
             with st.spinner():
                 file=download(td_)
-                st.download_button('download',file)
+                st.download_button('download',file,mime='application/zip')
                 # link = b64_file_to_href(file,'b')
                 # st.markdown(link, unsafe_allow_html=True)
 
@@ -38,6 +38,10 @@ def tdnet_render():
                 # "<script>window.open(\
                 #     'data:application/zip;base64,{}')</script>".format(src)
                 # )
+                # stc.html(
+                #     '<script>location.href={};</script>'.format(link)
+                #         )
+                
                 
 
 @st.cache(allow_output_mutation=True,show_spinner=False)
