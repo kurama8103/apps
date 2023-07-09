@@ -90,7 +90,7 @@ def tsa_render():
             filename_html = 'quantstats_'+df.name+'.html'
             st.download_button(
                 'Download Quantstats Full Analysis',
-                data=qs_html(df, 'tmp/quantstats-tearsheet.html'),
+                data=qs_html(df, filename_html),
                 file_name=filename_html)
 
         st.markdown(

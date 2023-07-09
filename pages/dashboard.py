@@ -1,7 +1,7 @@
-import re
 from pypfopt.efficient_frontier import EfficientFrontier
 from pypfopt import risk_models, expected_returns, plotting
 import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression, Ridge, Lasso,LassoCV
 
 import pandas as pd
 import streamlit as st
@@ -11,6 +11,7 @@ sns.set_style('whitegrid')
 
 import japanize_matplotlib
 japanize_matplotlib.japanize()
+
 
 
 def load_csv():
@@ -96,19 +97,26 @@ def format_df(df):
 
 
 def render_pf_opt():
-    df = load_csv()
-    if df is not None:
-        st.dataframe(format_df(df), height=200)
-        st.text('assets')
+    df_ = load_csv()
+    if df_ is not None:
+        st.text('graph')
+        flg=show_graphs(df_)
+
+        st.text('Return of assets')
+        show_returns(df_)
+
+        calc_regression(df_,flg)
+
+        st.text('mean and volatility')
         df_assets = pd.DataFrame({
-            'Expected annual return': expected_returns.mean_historical_return(df),
-            'annual volatility': (expected_returns.returns_from_prices(df).var()*252)**0.5,
+            'Expected annual return': expected_returns.mean_historical_return(df_),
+            'annual volatility': (expected_returns.returns_from_prices(df_).var()*252)**0.5,
         })
         df_assets['Sharpe Ratio'] = df_assets.iloc[:, 0]/df_assets.iloc[:, 1]
         st.dataframe(pd.DataFrame(df_assets))
 
         st.text('Optimaze portfolio')
-        res_opt, plt = pf_opt(df)
+        res_opt, plt = pf_opt(df_)
         st.dataframe(pd.DataFrame(res_opt).drop('weight').T)
 
         st.text('efficient frontier')
@@ -117,8 +125,65 @@ def render_pf_opt():
         st.text('weight')
         for k, v in res_opt.items():
             st.write(k)
-            st.bar_chart(pd.DataFrame(v['weight'], df.columns), width=50,)
+            st.bar_chart(pd.DataFrame(v['weight'], df_.columns), width=50,)
         
         st.json(res_opt)
+
+def show_returns(df_):
+    fig, ax = plt.subplots()
+    _ = df_.iloc[-1]/df_.iloc[[-2, -4, -7, -13]]-1
+    _.index = ['1M', '3M', '6M','12M']
+    sns.heatmap(_.T, center=0,
+                annot=True, fmt='.1%', cmap='PiYG')
+    st.write(fig)
+
+def show_graphs(df_):
+    if st.checkbox('price 1'):
+        df_=df_/df_.iloc[0]
+    
+    flg=0
+    if st.checkbox('pct_change'):
+        df_=df_.pct_change().dropna()
+        flg=1
+
+    st.line_chart(df_,height=200)
+    st.write(format_df(df_))
+    return flg
+
+def calc_regression(df_,flg=0):
+    y=st.selectbox('Y',df_.columns)
+    c=list(df_.columns.drop(y))
+    x=st.multiselect('X',c,c)
+    if len(x)==0:
+        st.stop()
+
+    model = LinearRegression(fit_intercept=True, normalize=False)
+    res=summary_model_sk(model,df_[x],df_[y])
+    st.write(model,res['score'])
+    st.json(res,expanded=False)
+
+    model = LassoCV(fit_intercept=True, normalize=False,alphas=[0,0.01,0.1,1,10],cv=5)
+    res=summary_model_sk(model,df_[x],df_[y])
+    st.write(model,res['score'])
+    st.json(res,expanded=False)
+
+    pred=(df_[x]*res['coef']).sum(axis=1)+res['intercept']
+    pred.name='prediction'
+    pred=pd.concat([pred,df_[y]],axis=1)
+    if flg==1:
+        pred=(1+pred).cumprod()
+    st.line_chart(pred,height=200)
+
+def summary_model_sk(model,x,y):
+    model.fit(x, y)
+    res = {
+#        'model': model,
+        'score': model.score(x, y),
+        'intercept': model.intercept_,
+        'coef': model.coef_.tolist(),
+#        'predict':model.predict(x),
+        'params': model.get_params()
+    }
+    return res
 
 render_pf_opt()
