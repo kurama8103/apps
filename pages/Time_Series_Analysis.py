@@ -6,6 +6,7 @@ import numpy as np
 import streamlit as st
 
 
+
 def load_csv():
     s = 'Choose a CSV file. '
     s += 'The first column of the file is the date, the first row is the column name.'
@@ -54,7 +55,7 @@ def tsa_render():
             d = {'Cumulative Return': (df[-1]/df[0]).round(4)}
             for s in l:
                 t = eval('df.{}()'.format(s))
-                d.update({s: t.round(4)})
+                d.update({s: t})
             st.dataframe(pd.Series(d, name='Value'))
         with col2:
             st.dataframe(format_df(df))
@@ -118,7 +119,7 @@ def predict_darts(series, n_pred=10, w=20):
     train = TimeSeries.from_series(series)[-w:]
 
     models = [
-        NaiveDrift(n_pred),
+        # NaiveDrift(n_pred),
         NaiveSeasonal(n_pred),
         AutoARIMA(),
         ExponentialSmoothing(),
