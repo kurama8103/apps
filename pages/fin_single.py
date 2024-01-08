@@ -6,27 +6,7 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 import matplotlib.pyplot as plt
-import sys
 from st_util import load_csv
-
-# def load_csv():
-#     s = 'Choose a CSV file. '
-#     s += 'The first column of the file is the date, the first row is the column name.'
-
-#     uploaded_file = st.file_uploader(s, type='csv',)
-#     if uploaded_file is None:
-#         if 'df' in st.session_state:
-#             return st.session_state['df']
-#         else:
-#             print(sys.argv)
-#             # uploaded_file = sys.argv[1]
-#     else:
-#         pass
-
-#     df = pd.read_csv(uploaded_file, index_col=0,
-#                      parse_dates=True)
-#     st.session_state['df'] = df
-#     return df
 
 
 def format_df(df, digit=4):
@@ -45,6 +25,8 @@ def tsa_render(df_):
         )
         if bm is not None:
             df_bm = df_[bm]
+        else:
+            df_bm = None
 
         if min(df) < 0:
             pass
@@ -94,7 +76,7 @@ def tsa_render(df_):
         #     d.update({s: t})
         # st.dataframe(pd.Series(d, name="Value"))
 
-        import myfunc.finfunc as mff
+        # import myfunc.finfunc as mff
         from numpy.lib.stride_tricks import sliding_window_view
         import scipy
 
@@ -106,7 +88,6 @@ def tsa_render(df_):
             return x[-1] - mom
 
         def moving_window(x, window: int, func) -> list:
-            # return [func(x[i : i + window]) for i in range(len(x) + 1 - window)]
             return [func(d) for d in sliding_window_view(x, window)]
 
         def moving_window_df(x: pd.DataFrame, window: int, func) -> pd.DataFrame:
@@ -116,15 +97,18 @@ def tsa_render(df_):
             )
 
         def _f(x):
-            s = np.std(x) * np.sqrt(252)
+            n = 252
+            m = np.mean(x) * n
+            s = np.std(x) * np.sqrt(n)
             d = {
+                "roll_ret": m,
                 "std": s,
-                "sharpe": (np.mean(x) / s),
+                "sharpe": (m / s),
                 "skew": scipy.stats.skew(x),
                 "kurt": scipy.stats.kurtosis(x),
-                "hurst": mff.hurst(x)[0],
+                # "hurst": mff.hurst(x)[0],
                 "mom": momentum(x),
-                "cvar": mff.cvar(x)[1],
+                # "cvar": mff.cvar(x)[1],
                 # "adf":mff.adf_summary(x)['adf'],
             }
             return d
@@ -157,8 +141,8 @@ def tsa_render(df_):
         _ = pd.concat(
             [
                 (dfr + 1).cumprod(),
-                mff.max_draw_down(df),
-                moving_window_df(dfr, 30, _f),
+                # mff.max_draw_down(df),
+                moving_window_df(dfr, 180, _f),
             ],
             axis=1,
         )
@@ -168,7 +152,7 @@ def tsa_render(df_):
             st.line_chart(d, height=h)
 
         # st.pyplot(qs.plots.monthly_heatmap(dfr, square=True, show=False))
-        st.dataframe(format_df(_.dropna()))
+        st.dataframe(format_df(_.dropna()), height=200)
 
         count, division = np.histogram(dfr, bins=20)
         st.bar_chart(pd.Series(count, np.round(division[1:] * 100, 1)), height=h)
@@ -207,7 +191,7 @@ def tsa_render(df_):
             filename_html = "quantstats_" + df.name + ".html"
             st.download_button(
                 "Download Quantstats Full Analysis",
-                data=qs_html(df, filename_html),
+                data=qs_html(df, filename_html, benchmark=df_bm),
                 file_name=filename_html,
             )
 
@@ -216,20 +200,16 @@ def tsa_render(df_):
             unsafe_allow_html=True,
         )
 
-        # st.markdown('### pyfolio')
-        # import pyfolio as pf
-        # import matplotlib.pyplot as plt
-        # fig,ax=plt.subplots()
-        # ax=pf.plotting.plot_drawdown_underwater(returns=dfr,ax=ax)
-        # st.pyplot(fig)
-        # st.set_option('deprecation.showPyplotGlobalUse', False)
-        # st.pyplot(pf.tears.create_simple_tear_sheet(returns=dfr))
-
 
 @st.cache(show_spinner=False)
-def qs_html(df: pd.DataFrame, download_filename):
+def qs_html(df: pd.DataFrame, download_filename, benchmark=None):
     qs.reports.html(
-        df, rf=0.0, title=df.name, download_filename=download_filename, output="./tmp/"
+        df,
+        rf=0.0,
+        title=df.name,
+        download_filename=download_filename,
+        output="./tmp/",
+        benchmark=benchmark,
     )
 
     with open(download_filename) as f:
