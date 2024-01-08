@@ -7,6 +7,7 @@ streamlit
 streamlit_folium
 folium
 -e git+https://github.com/kurama8103/gpxdf.git#egg=gpxdf
+-e git+https://github.com/kurama8103/myfunc.git#egg=myfunc
 quantstats
 scikit-learn
 pyportfolioopt
