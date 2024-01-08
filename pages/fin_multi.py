@@ -6,26 +6,12 @@ from sklearn.linear_model import LinearRegression, Ridge, Lasso, LassoCV
 
 import pandas as pd
 import streamlit as st
+from st_util import load_csv
 
 import seaborn as sns
 sns.set_style('whitegrid')
 
 japanize_matplotlib.japanize()
-
-
-def load_csv():
-    s = 'Choose a CSV file. '
-    s += 'The first column of the file is the date, the first row is the column name.'
-
-    uploaded_file = st.file_uploader(s, type='csv',)
-    if uploaded_file is None:
-        if 'df' in st.session_state:
-            return st.session_state['df']
-    else:
-        df = pd.read_csv(uploaded_file, index_col=0,
-                         parse_dates=True)
-        st.session_state['df'] = df
-        return df
 
 
 def pf_opt(return_index):
