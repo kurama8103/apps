@@ -20,29 +20,45 @@ def tsa_render(df_):
     n_pred = 10
     if df_ is not None:
         df = df_[st.selectbox("select data", df_.columns)]
-        bm = st.selectbox(
-            "select benchmark data", [None] + list(df_.columns.drop(df.name))
-        )
-        if bm is not None:
-            df_bm = df_[bm]
-        else:
-            df_bm = None
-
-        if min(df) < 0:
-            pass
-        else:
-            dfr = df.pct_change().dropna()
+        # bm = st.selectbox(
+        #     "select benchmark data", [None] + list(df_.columns.drop(df.name))
+        # )
+        # if bm is not None:
+        #     df_bm = df_[bm]
+        # else:
+        #     df_bm = None
 
         st.markdown("### Input data")
+        df_ = df
+        d1 = df.index[0].to_pydatetime()
+        d2 = df.index[-1].to_pydatetime()
+
+        d1, d2 = st.slider(
+            "period",
+            value=(d1, d2),
+            min_value=d1,
+            max_value=d2,
+            format="Y/M/D",
+            step=pd.Timedelta(days=1),
+        )
+        df_ = df.loc[d1:d2]
+
+        if min(df_) < 0:
+            pass
+        else:
+            dfr = df_.pct_change().dropna()
+            dfr.name = "cum_ret"
+
         st.text(
-            "From "
-            + df.index[0].strftime("%Y-%m-%d")
-            + " To "
-            + df.index[-1].strftime("%Y-%m-%d")
-            + "\n"
-            + str((df.index[-1] - df.index[0]).days)
+            # "From "
+            # + df_.index[0].strftime("%Y-%m-%d")
+            # + " To "
+            # + df_.index[-1].strftime("%Y-%m-%d")
+            # + "\n"
+            ""
+            + str((df_.index[-1] - df_.index[0]).days)
             + " days ("
-            + str(round((df.index[-1] - df.index[0]).days / 365, 2))
+            + str(round((df_.index[-1] - df_.index[0]).days / 365, 2))
             + " years)"
         )
 
@@ -155,9 +171,13 @@ def tsa_render(df_):
         st.dataframe(format_df(_.dropna()), height=200)
 
         count, division = np.histogram(dfr, bins=20)
-        st.bar_chart(pd.Series(count, np.round(division[1:] * 100, 1)), height=h)
+        st.bar_chart(
+            pd.Series(count, np.round(division[1:] * 100, 1), name="histgram"), height=h
+        )
 
-        st.bar_chart(df.asfreq("D").ffill().asfreq("M").pct_change().dropna(), height=h)
+        _ = df.asfreq("D").ffill().asfreq("M").pct_change().dropna()
+        _.name = "month_ret"
+        st.bar_chart(_, height=h)
 
         # st.markdown("### Predict")
         # pred = predict_darts(dfr.asfreq("B", method="ffill"), n_pred=n_pred)
@@ -191,7 +211,7 @@ def tsa_render(df_):
             filename_html = "quantstats_" + df.name + ".html"
             st.download_button(
                 "Download Quantstats Full Analysis",
-                data=qs_html(df, filename_html, benchmark=df_bm),
+                data=qs_html(df_, filename_html, benchmark=None),
                 file_name=filename_html,
             )
 
