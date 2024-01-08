@@ -168,7 +168,6 @@ def tsa_render(df_):
             st.line_chart(d, height=h)
 
         # st.pyplot(qs.plots.monthly_heatmap(dfr, square=True, show=False))
-        st.dataframe(format_df(_.dropna()), height=200)
 
         count, division = np.histogram(dfr, bins=20)
         st.bar_chart(
@@ -178,6 +177,8 @@ def tsa_render(df_):
         _ = df.asfreq("D").ffill().asfreq("M").pct_change().dropna()
         _.name = "month_ret"
         st.bar_chart(_, height=h)
+
+        st.dataframe(format_df(_.dropna()), height=200)
 
         # st.markdown("### Predict")
         # pred = predict_darts(dfr.asfreq("B", method="ffill"), n_pred=n_pred)
