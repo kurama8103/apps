@@ -8,9 +8,9 @@ streamlit_folium
 folium
 -e git+https://github.com/kurama8103/gpxdf.git#egg=gpxdf
 -e git+https://github.com/kurama8103/myfunc.git#egg=myfunc
-QuantStats==0.0.58
 scikit-learn==1.1.3
 pyportfolioopt
 japanize_matplotlib
 # darts
 IPython
+QuantStats==0.0.58
