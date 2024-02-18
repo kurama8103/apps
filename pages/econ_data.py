@@ -102,9 +102,7 @@ def st_plot(
 
     if mode == "plotly":
         return st.plotly_chart(
-            px.line(
-                df.round(round), title=title, labels={"value": "", "DATE": ""}
-            ).update_layout(legend=legend_dict),
+            px.line(df.round(round), title=title).update_layout(legend=legend_dict),
             use_container_width=True,
         )
     else:
@@ -117,8 +115,12 @@ def st_plot(
 
 def main(df_fred):
     st.write("### econ data")
+
     # _d = dic_fred["Q"]
-    _d = df_fred
+    s = df_fred.index[0].to_pydatetime()
+    e = df_fred.index[-1].to_pydatetime()
+    t = st.slider("", s, e, (s, e))
+    _d = df_fred[t[0] : t[1]]
     st_plot(
         _d.loc[:, _d.columns.str.contains("NOMINAL")],
         indexation=True,
