@@ -28,7 +28,7 @@ fn = "dic_fred.pickle"
 dic_ticker = {}
 dic_ticker["D"] = {
     "US_FED_RATE": "DFF",
-    "USG10": "DGS10",
+    "US_Govt_10Y": "DGS10",
     "USDJPY": "DEXJPUS",
     "USDEUR": "DEXUSEU",
     # "USDCNY": "DEXCHUS",
@@ -89,13 +89,19 @@ def st_plot(
     title: str = "",
     mode="plotly",
 ):
+    if df is None:
+        print("None")
+        return None
+
     if indexation:
         df /= df.iloc[0]
         title += " (Indexed)"
 
     if mode == "plotly":
         return st.plotly_chart(
-            px.line(df.round(round), title=title).update_layout(legend=legend_dict),
+            px.line(
+                df.round(round), title=title, labels={"value": "", "DATE": ""}
+            ).update_layout(legend=legend_dict),
             use_container_width=True,
         )
     else:
@@ -131,20 +137,23 @@ def main(dic_fred):
     )
     st_plot(_d.loc[:, _d.columns.str.contains("UNEMP")], title="Unemployment")
 
-    st_plot(dic_fred["D"][["US_FED_RATE", "USG10"]], title="US Interest rate")
-    st_plot(dic_fred["D"][["USDJPY", "USDEUR"]], indexation=True, title="FX rate")
+    st_plot(dic_fred["D"].get(["US_FED_RATE", "US_Govt_10Y"]), title="US Interest rate")
+    st_plot(dic_fred["D"].get(["USDJPY", "USDEUR"]), indexation=True, title="FX rate")
     st_plot(
-        dic_fred["D"][["NASDAQ_Composit", "BTC_CB"]], indexation=True, title="Indices"
+        dic_fred["D"].get(["NASDAQ_Composit", "BTC_CB"]),
+        indexation=True,
+        title="Indices",
     )
     st.write(
-        "Source : Federal Reserve Bank of St. Louis,  \n"
-        + "Organization for Economic Co-operation and Development,  \n"
-        + "Board of Governors of the Federal Reserve System (US),  \n"
-        + "U.S. Bureau of Economic Analysis,  \n"
-        + "U.S. Bureau of Labor Statistics,  \n"
-        + "NASDAQ OMX Group, Inc.,  \n"
-        + "Coinbase,  \n"
-        + "JP. Cabinet Office,  \n"
+        "Source :  \n"
+        + "Federal Reserve Bank of St. Louis, "
+        + "Organization for Economic Co-operation and Development, "
+        + "Board of Governors of the Federal Reserve System (US), "
+        + "U.S. Bureau of Economic Analysis, "
+        + "U.S. Bureau of Labor Statistics, "
+        + "NASDAQ OMX Group, Inc., "
+        + "Coinbase, "
+        + "JP. Cabinet Office, "
         + "Eurostat"
     )
 
