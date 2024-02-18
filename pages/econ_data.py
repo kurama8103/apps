@@ -26,7 +26,7 @@ legend_dict = dict(
 fn = "dic_fred.pickle"
 
 dic_ticker = {}
-dic_ticker["D"] = {
+dic_ticker = {
     "US_FED_RATE": "DFF",
     "US_Govt_10Y": "DGS10",
     "USDJPY": "DEXJPUS",
@@ -36,8 +36,8 @@ dic_ticker["D"] = {
     # "SP500_VIX_3M": "VXVCLS",
     # "225": "NIKKEI225",
     "BTC_CB": "CBBTCUSD",
-}
-dic_ticker["M"] = {
+    # }
+    # dic_ticker["M"] = {
     # "US_CPI_Core": "CPILFESL",
     "US_CPI": "CPIAUCSL",
     # "JP_CPI": "CPALTT01JPM661S",
@@ -46,8 +46,8 @@ dic_ticker["M"] = {
     "US_UNEMP": "UNRATE",
     "JP_UNEMP": "LRUNTTTTJPM156S",
     "DE_UNEMP": "LMUNRRTTDEM156S",
-}
-dic_ticker["Q"] = {
+    # }
+    # dic_ticker["Q"] = {
     "US_GDP_REAL": "GDPC1",
     "JP_GDP_REAL": "JPNRGDPEXP",
     "DE_GDP_REAL": "CLVMNACSCAB1GQDE",
@@ -63,23 +63,25 @@ def get_data_econ(fn: str, dic_ticker: dict, start, end, flg: bool = False):
     if os.path.exists(fn) and not (flg):
         print("load")
         with open(fn, "rb") as f:
-            dic_fred = pickle.load(f)
+            df = pickle.load(f)
 
     else:
         print("download")
-        if "dic_fred" not in locals():
-            dic_fred = {}
+        # if "dic_fred" not in locals():
+        #     dic_fred = {}
 
-        for k in dic_ticker.keys():
-            type_ = k
-            _d = web.DataReader(dic_ticker[type_].values(), "fred", start, end)
-            _d.columns = dic_ticker[type_].keys()
-            dic_fred[type_] = _d
+        # for k in dic_ticker.keys():
+        #     type_ = k
+        #     _d = web.DataReader(dic_ticker[type_].values(), "fred", start, end)
+        #     _d.columns = dic_ticker[type_].keys()
+        #     dic_fred[type_] = _d
+        df = web.DataReader(dic_ticker.values(), "fred", start, end)
+        df.columns = dic_ticker.keys()
 
         with open(fn, "wb") as f:
-            pickle.dump(dic_fred, f)
+            pickle.dump(df, f)
 
-    return dic_fred
+    return df
 
 
 def st_plot(
@@ -93,6 +95,7 @@ def st_plot(
         print("None")
         return None
 
+    df = df.dropna(how="all")
     if indexation:
         df /= df.iloc[0]
         title += " (Indexed)"
@@ -112,9 +115,10 @@ def st_plot(
         return st.pyplot(fig)
 
 
-def main(dic_fred):
+def main(df_fred):
     st.write("### econ data")
-    _d = dic_fred["Q"]
+    # _d = dic_fred["Q"]
+    _d = df_fred
     st_plot(
         _d.loc[:, _d.columns.str.contains("NOMINAL")],
         indexation=True,
@@ -128,7 +132,7 @@ def main(dic_fred):
         title="REAL GDP",
     )
 
-    _d = dic_fred["M"]
+    # _d = dic_fred["M"]
     st_plot(
         _d.loc[:, _d.columns.str.contains("CPI")],
         indexation=True,
@@ -137,10 +141,10 @@ def main(dic_fred):
     )
     st_plot(_d.loc[:, _d.columns.str.contains("UNEMP")], title="Unemployment")
 
-    st_plot(dic_fred["D"].get(["US_FED_RATE", "US_Govt_10Y"]), title="US Interest rate")
-    st_plot(dic_fred["D"].get(["USDJPY", "USDEUR"]), indexation=True, title="FX rate")
+    st_plot(_d.get(["US_FED_RATE", "US_Govt_10Y"]), title="US Interest rate")
+    st_plot(_d.get(["USDJPY", "USDEUR"]), indexation=True, title="FX rate")
     st_plot(
-        dic_fred["D"].get(["NASDAQ_Composit", "BTC_CB"]),
+        _d.get(["NASDAQ_Composit", "BTC_CB"]),
         indexation=True,
         title="Indices",
     )
@@ -158,5 +162,5 @@ def main(dic_fred):
     )
 
 
-dic_fred = get_data_econ(fn, dic_ticker, start_3y, end, flg=False)
-main(dic_fred=dic_fred)
+df_fred = get_data_econ(fn, dic_ticker, start_3y, end, flg=False)
+main(df_fred)
