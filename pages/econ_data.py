@@ -1,4 +1,3 @@
-# %%
 import os
 import pickle
 import pandas as pd
@@ -9,12 +8,14 @@ import streamlit as st
 px.defaults.template = "plotly"
 px.defaults.width = 600
 px.defaults.height = 300
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+
 # pd.options.plotting.backend = "plotly"
 
 end = pd.Timestamp.today() + pd.Timedelta(days=0)
-start = end - pd.Timedelta(days=366)
-start_3y = end - pd.Timedelta(days=365 * 3 + 1)
+n = 365
+start = end - pd.Timedelta(days=n + 1)
+start_3y = end - pd.Timedelta(days=n * 3 + 1)
 legend_dict = dict(
     x=0.5,
     y=1,
@@ -24,7 +25,6 @@ legend_dict = dict(
 )
 fn = "dic_fred.pickle"
 
-# %%
 dic_ticker = {}
 dic_ticker["D"] = {
     "US_FED_RATE": "DFF",
@@ -32,8 +32,8 @@ dic_ticker["D"] = {
     "USDJPY": "DEXJPUS",
     "USDEUR": "DEXUSEU",
     # "USDCNY": "DEXCHUS",
-    "SP500": "SP500",
-    "SP500_VIX_3M": "VXVCLS",
+    "NASDAQ_Composit": "NASDAQCOM",
+    # "SP500_VIX_3M": "VXVCLS",
     # "225": "NIKKEI225",
     "BTC_CB": "CBBTCUSD",
 }
@@ -58,7 +58,6 @@ dic_ticker["Q"] = {
 }
 
 
-# %%
 @st.cache(allow_output_mutation=True, show_spinner=False)
 def get_data_econ(fn: str, dic_ticker: dict, start, end, flg: bool = False):
     if os.path.exists(fn) and not (flg):
@@ -83,20 +82,28 @@ def get_data_econ(fn: str, dic_ticker: dict, start, end, flg: bool = False):
     return dic_fred
 
 
-def st_plot(df, indexation: bool = False, round: int = 2, title: str = ""):
+def st_plot(
+    df: pd.DataFrame,
+    indexation: bool = False,
+    round: int = 2,
+    title: str = "",
+    mode="plotly",
+):
     if indexation:
         df /= df.iloc[0]
         title += " (Indexed)"
 
-    # fig, ax = plt.subplots()
-    # ax.plot(df)
-    # ax.legend(df.columns)
-    # return st.pyplot(fig)
-
-    return st.plotly_chart(
-        px.line(df.round(round), title=title).update_layout(legend=legend_dict),
-        use_container_width=True,
-    )
+    if mode == "plotly":
+        return st.plotly_chart(
+            px.line(df.round(round), title=title).update_layout(legend=legend_dict),
+            use_container_width=True,
+        )
+    else:
+        fig, ax = plt.subplots(tight_layout=False)
+        # ax.plot(df)
+        df.plot(subplots=True, ax=ax)
+        ax.legend(df.columns)
+        return st.pyplot(fig)
 
 
 def main(dic_fred):
@@ -122,21 +129,25 @@ def main(dic_fred):
         round=3,
         title="CPI",
     )
-    st_plot(
-        _d.loc[:, _d.columns.str.contains("UNEMP")],
-        title="Unemployment",
-    )
-
-    # fig, ax = plt.subplots(tight_layout=False)
-    # dic_fred["D"].plot(subplots=True, ax=ax)
-    # st.pyplot(fig)
+    st_plot(_d.loc[:, _d.columns.str.contains("UNEMP")], title="Unemployment")
 
     st_plot(dic_fred["D"][["US_FED_RATE", "USG10"]], title="US Interest rate")
     st_plot(dic_fred["D"][["USDJPY", "USDEUR"]], indexation=True, title="FX rate")
-    st_plot(dic_fred["D"][["SP500", "BTC_CB"]], indexation=True, title="Indices")
-    st_plot(dic_fred["D"][["SP500_VIX_3M"]], title="SP500_VIX_3M")
+    st_plot(
+        dic_fred["D"][["NASDAQ_Composit", "BTC_CB"]], indexation=True, title="Indices"
+    )
+    st.write(
+        "Source : Federal Reserve Bank of St. Louis,  \n"
+        + "Organization for Economic Co-operation and Development,  \n"
+        + "Board of Governors of the Federal Reserve System (US),  \n"
+        + "U.S. Bureau of Economic Analysis,  \n"
+        + "U.S. Bureau of Labor Statistics,  \n"
+        + "NASDAQ OMX Group, Inc.,  \n"
+        + "Coinbase,  \n"
+        + "JP. Cabinet Office,  \n"
+        + "Eurostat"
+    )
 
 
 dic_fred = get_data_econ(fn, dic_ticker, start_3y, end, flg=False)
 main(dic_fred=dic_fred)
-# %%

@@ -75,17 +75,24 @@ def moving_window_df(x: pd.DataFrame, window: int, func) -> pd.DataFrame:
 
 
 # %%
+from scipy.stats import gmean
+
+
 def _f(x):
-    s = np.std(x) * np.sqrt(252)
+    n = 252
+    m = np.mean(x) * n
+    # m = gmean(1 + x) - 1
+    s = np.std(x) * np.sqrt(n)
     d = {
+        "mean": m,
         "std": s,
-        "sharpe": (np.mean(x) / s),
+        "sharpe": (m / s),
         "skew": scipy.stats.skew(x),
-        "kurtosis": scipy.stats.kurtosis(x),
+        "kurt": scipy.stats.kurtosis(x),
         "hurst": mff.hurst(x)[0],
-        "cvar": mff.cvar(x)[1],
+        "mom": momentum(x),
+        # "cvar": mff.cvar(x)[1],
         # "adf":mff.adf_summary(x)['adf'],
-        "momentum": momentum(x),
     }
     return d
 
@@ -94,7 +101,7 @@ _ = pd.concat(
     [
         (x_ + 1).cumprod(),
         mff.max_draw_down(x),
-        moving_window_df(x_, 30, _f),
+        moving_window_df(x_, 180, _f),
     ],
     axis=1,
 )
