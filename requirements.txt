@@ -14,3 +14,4 @@ japanize_matplotlib
 # darts
 IPython
 QuantStats==0.0.58
+plotly==5.5.0
