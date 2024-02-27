@@ -1,5 +1,4 @@
 import os
-import pickle
 import pandas as pd
 import pandas_datareader.data as web
 import plotly.express as px
@@ -23,7 +22,7 @@ legend_dict = dict(
     xanchor="center",
     orientation="h",
 )
-fn = "dic_fred.pickle"
+fn_fred_econ = "files/_fred_econ.pickle"
 
 dic_ticker = {}
 dic_ticker = {
@@ -61,26 +60,13 @@ dic_ticker = {
 @st.cache(allow_output_mutation=True, show_spinner=False)
 def get_data_econ(fn: str, dic_ticker: dict, start, end, flg: bool = False):
     if os.path.exists(fn) and not (flg):
-        print("load")
-        with open(fn, "rb") as f:
-            df = pickle.load(f)
-
+        print("read pickle")
+        df = pd.read_pickle(fn)
     else:
-        print("download")
-        # if "dic_fred" not in locals():
-        #     dic_fred = {}
-
-        # for k in dic_ticker.keys():
-        #     type_ = k
-        #     _d = web.DataReader(dic_ticker[type_].values(), "fred", start, end)
-        #     _d.columns = dic_ticker[type_].keys()
-        #     dic_fred[type_] = _d
+        print("download from fred")
         df = web.DataReader(dic_ticker.values(), "fred", start, end)
         df.columns = dic_ticker.keys()
-
-        with open(fn, "wb") as f:
-            pickle.dump(df, f)
-
+        df.to_pickle(fn)
     return df
 
 
@@ -113,10 +99,11 @@ def st_plot(
         return st.pyplot(fig)
 
 
-def main(df_fred):
+def main():
     st.write("### econ data")
 
     # _d = dic_fred["Q"]
+    df_fred = get_data_econ(fn_fred_econ, dic_ticker, start_3y, end, flg=False)
     s = df_fred.index[0].to_pydatetime()
     e = df_fred.index[-1].to_pydatetime()
     t = st.slider("", s, e, (s, e))
@@ -164,5 +151,4 @@ def main(df_fred):
     )
 
 
-df_fred = get_data_econ(fn, dic_ticker, start_3y, end, flg=False)
-main(df_fred)
+main()
