@@ -49,7 +49,7 @@ def tdnet(sel_code):
     td.getData_tdnet_KeywordSearch(sel_code)
     return td
 
-@st.cache_data(show_spinner=False)
+# @st.cache_data(show_spinner=False)
 def download(td):
     # PDFダウンロード
     td.df.drop_duplicates(inplace=True)
