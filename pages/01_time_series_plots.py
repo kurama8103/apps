@@ -103,35 +103,42 @@ def tsa_render(df):
 
         st.write(code)
         # st.line_chart((df_[code]), height=h, color=color_set[0])
-        st.line_chart(df_[code], height=h)
+        st.line_chart(format_df(df_[code]), height=h)
 
         if bm:
             st.write(bm)
-            st.line_chart(format_df(df_[bm]), height=h,
-                        #   color=color_set[-1]
-                          )
+            st.line_chart(
+                format_df(df_[bm]),
+                height=h,
+                #   color=color_set[-1]
+            )
 
         st.write("cumulative return")
         d = (dfr + 1).cumprod()
         d.name = code
-        st.area_chart(format_df(d - 1), height=h,
-                    #   color=color, 
-                      stack=False)
+        st.area_chart(format_df(d - 1), height=h, stack=False)
+        #   color=color,
 
         st.write("draw down")
         d = d / d.rolling(len(d), min_periods=1).max() - 1
         d.name = code
-        st.area_chart(format_df(d), height=h, 
-                    #   color=color, 
-                      stack=False)
+        st.area_chart(
+            format_df(d),
+            height=h,
+            #   color=color,
+            stack=False,
+        )
 
         _ = dfr.asfreq("BM")
         if len(_) > 0:
             st.write("monthly return")
             _.name = code
-            st.bar_chart(format_df(_), height=h, 
-                        #  color=color, 
-                         stack=False)
+            st.bar_chart(
+                format_df(_),
+                height=h,
+                #  color=color,
+                stack=False,
+            )
 
         st.write("histgram (daily return, %)")
         if bm:
@@ -139,15 +146,20 @@ def tsa_render(df):
             h1 = np.histogram(dfr[code], bins=20, range=(division[0], division[-1]))[0]
             h2 = np.histogram(dfr[bm], bins=20, range=(division[0], division[-1]))[0]
             hg = pd.DataFrame({code: h1, bm: h2}, np.round(division[1:] * 100, 1))
-            st.bar_chart(hg, height=h, 
-                        #  color=color, 
-                         stack=False)
+            st.bar_chart(
+                hg,
+                height=h,
+                #  color=color,
+                stack=False,
+            )
         else:
             count, division = np.histogram(dfr[code], bins=20)
             hg = pd.Series(count, np.round(division[1:] * 100, 1))
-            st.bar_chart(hg, height=h, 
-                        #  color=color[-1]
-                         )
+            st.bar_chart(
+                hg,
+                height=h,
+                #  color=color[-1]
+            )
 
         st.markdown("### moving window metrics")
         _ = moving_window_df(dfr[code], window, _f)
@@ -165,21 +177,24 @@ def tsa_render(df):
                         stack=False,
                     )
                 else:
-                    st.area_chart(d, height=h, 
-                                #   color=color, 
-                                  stack=False)
+                    st.area_chart(
+                        d,
+                        height=h,
+                        #   color=color,
+                        stack=False,
+                    )
             if bm:
                 st.write("returns correlation (rolling {} days)".format(window))
                 st.line_chart(
-                    format_df(moving_window_df(
-                        dfr[[code, bm]],
-                        window,
-                        lambda x: np.corrcoef(x)[0, 1]),
+                    format_df(
+                        moving_window_df(
+                            dfr[[code, bm]], window, lambda x: np.corrcoef(x)[0, 1]
+                        ),
                     ),
                     height=h,
                     # color=color_set[0],
                 )
-                
+
         # full report
         st.markdown("### Quantstats")
         f = code
