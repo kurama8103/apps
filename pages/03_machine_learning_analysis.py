@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression, Ridge, Lasso, LassoCV
+from sklearn.linear_model import LinearRegression, LassoCV
 
 import pandas as pd
 import streamlit as st
@@ -39,8 +39,8 @@ def main():
 
 def vis_features(X, y, figsize=(8, 4)):
     from yellowbrick.features import rank2d, pca_decomposition
-    from sklearn.cluster import KMeans
-    from yellowbrick.cluster.elbow import kelbow_visualizer
+    # from sklearn.cluster import KMeans
+    # from yellowbrick.cluster.elbow import kelbow_visualizer
 
     fig, axes = plt.subplots(nrows=1, ncols=1, figsize=figsize)
 
@@ -109,7 +109,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from lightgbm import LGBMRegressor, LGBMClassifier
-import shap
+# import shap÷\
 
 # shap.initjs()
 
@@ -148,14 +148,14 @@ def quick_classifier(X, y, n_class=5, return_model=False):
     ] + [cls]
 
 
-def vis_shap(model, X):
-    print(model)
-    explainer = shap.TreeExplainer(model)
-    shap_values = explainer(X)
+# def vis_shap(model, X):
+#     print(model)
+#     explainer = shap.TreeExplainer(model)
+#     shap_values = explainer(X)
 
-    shap.summary_plot(shap_values)
-    # shap.summary_plot(shap_values, plot_type="bar")
-    return shap_values
+#     shap.summary_plot(shap_values)
+#     # shap.summary_plot(shap_values, plot_type="bar")
+#     return shap_values
 
 
 def calc_regression(df_, flg=0):

@@ -13,7 +13,6 @@ from st_util import (
 )
 
 pd.options.plotting.backend = "matplotlib"
-from mlib.finance import finfunc as mff
 
 
 @st.cache_data(show_spinner=False)
