@@ -44,7 +44,6 @@ def tdnet_render():
                 
                 
 
-@st.cache_data(show_spinner=False)
 def tdnet(sel_code):
     td = tdnet_tool.tdNet()
     td.getData_tdnet_KeywordSearch(sel_code)

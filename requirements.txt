@@ -9,7 +9,7 @@ streamlit_folium
 folium
 -e git+https://github.com/kurama8103/gpxdf.git#egg=gpxdf
 scikit-learn==1.4.2
-pyportfolioopt
+pyportfolioopt==1.5.5
 japanize_matplotlib
 # darts
 # IPython
