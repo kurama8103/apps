@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression, LassoCV
+# from sklearn.linear_model import LinearRegression, LassoCV
 
 import pandas as pd
 import streamlit as st
