@@ -8,7 +8,7 @@ streamlit==1.10.0
 streamlit_folium
 folium
 -e git+https://github.com/kurama8103/gpxdf.git#egg=gpxdf
-scikit-learn==1.1.3
+scikit-learn==1.4.2
 pyportfolioopt
 japanize_matplotlib
 # darts
@@ -22,4 +22,4 @@ matplotlib
 altair<5
 lightgbm
 yellowbrick
-seaborn
+seaborn==0.13.2

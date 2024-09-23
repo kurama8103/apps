@@ -102,7 +102,7 @@ def tsa_render(df):
         )
 
         st.write(code)
-        st.line_chart(format_df(df_[code]), height=h, color=color_set[0])
+        st.line_chart((df_[code]), height=h, color=color_set[0])
 
         if bm:
             st.write(bm)
