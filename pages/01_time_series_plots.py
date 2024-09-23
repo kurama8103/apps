@@ -103,12 +103,12 @@ def tsa_render(df):
 
         st.write(code)
         # st.line_chart((df_[code]), height=h, color=color_set[0])
-        st.line_chart(format_df(df_[code]), height=h)
+        st.line_chart((df_[code]), height=h)
 
         if bm:
             st.write(bm)
             st.line_chart(
-                format_df(df_[bm]),
+                (df_[bm]),
                 height=h,
                 #   color=color_set[-1]
             )
@@ -116,14 +116,14 @@ def tsa_render(df):
         st.write("cumulative return")
         d = (dfr + 1).cumprod()
         d.name = code
-        st.area_chart(format_df(d - 1), height=h, stack=False)
+        st.area_chart((d - 1), height=h, stack=False)
         #   color=color,
 
         st.write("draw down")
         d = d / d.rolling(len(d), min_periods=1).max() - 1
         d.name = code
         st.area_chart(
-            format_df(d),
+            (d),
             height=h,
             #   color=color,
             stack=False,
@@ -134,7 +134,7 @@ def tsa_render(df):
             st.write("monthly return")
             _.name = code
             st.bar_chart(
-                format_df(_),
+                (_),
                 height=h,
                 #  color=color,
                 stack=False,
@@ -171,7 +171,7 @@ def tsa_render(df):
                 d.name = code
                 if bm:
                     st.area_chart(
-                        format_df(pd.DataFrame({code: d, bm: _bm[c]})),
+                        (pd.DataFrame({code: d, bm: _bm[c]})),
                         height=h,
                         # color=color,
                         stack=False,
@@ -186,7 +186,7 @@ def tsa_render(df):
             if bm:
                 st.write("returns correlation (rolling {} days)".format(window))
                 st.line_chart(
-                    format_df(
+                    (
                         moving_window_df(
                             dfr[[code, bm]], window, lambda x: np.corrcoef(x)[0, 1]
                         ),
