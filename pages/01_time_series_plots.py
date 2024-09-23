@@ -116,7 +116,10 @@ def tsa_render(df):
         st.write("cumulative return")
         d = (dfr + 1).cumprod()
         d.name = code
-        st.area_chart((d - 1), height=h, stack=False)
+        st.area_chart((d - 1), 
+                      height=h, 
+                    #   stack=False
+                      )
         #   color=color,
 
         st.write("draw down")
@@ -126,7 +129,7 @@ def tsa_render(df):
             (d),
             height=h,
             #   color=color,
-            stack=False,
+            # stack=False,
         )
 
         _ = dfr.asfreq("BM")
