@@ -66,43 +66,43 @@ def vis_model_regression(model, X_train, y_train, X_test, y_test, return_model=F
     return res
 
 
-from sklearn.preprocessing import KBinsDiscretizer
+# from sklearn.preprocessing import KBinsDiscretizer
 
 
-def categoricalize(x, n_bins=5):
-    cls = KBinsDiscretizer(n_bins=n_bins, encode="ordinal")
-    _ = cls.fit_transform(x.values.reshape(-1, 1)).reshape(-1).astype(int)
-    return pd.Categorical(_), cls
+# def categoricalize(x, n_bins=5):
+#     cls = KBinsDiscretizer(n_bins=n_bins, encode="ordinal")
+#     _ = cls.fit_transform(x.values.reshape(-1, 1)).reshape(-1).astype(int)
+#     return pd.Categorical(_), cls
 
 
-def vis_model_classifier(model, X_train, y_train, X_test, y_test, return_model=False):
-    import re
-    from yellowbrick.classifier.rocauc import roc_auc
-    from yellowbrick.classifier import precision_recall_curve, class_prediction_error
-    from yellowbrick.classifier import classification_report, confusion_matrix
+# def vis_model_classifier(model, X_train, y_train, X_test, y_test, return_model=False):
+#     import re
+#     from yellowbrick.classifier.rocauc import roc_auc
+#     from yellowbrick.classifier import precision_recall_curve, class_prediction_error
+#     from yellowbrick.classifier import classification_report, confusion_matrix
 
-    pre = re.sub(r"[^A-Z]", "", str(model)) + "_"
-    res = dict()
-    fig, axes = plt.subplots(nrows=5, ncols=1, figsize=(12, 12))
-    _ = roc_auc(
-        model, X_train, y_train, X_test=X_test, y_test=y_test, show=False, ax=axes[0]
-    )
-    res[pre + "roc_auc"] = _.roc_auc
-    _ = precision_recall_curve(
-        model, X_train, y_train, X_test, y_test, per_class=True, show=False, ax=axes[1]
-    )
+#     pre = re.sub(r"[^A-Z]", "", str(model)) + "_"
+#     res = dict()
+#     fig, axes = plt.subplots(nrows=5, ncols=1, figsize=(12, 12))
+#     _ = roc_auc(
+#         model, X_train, y_train, X_test=X_test, y_test=y_test, show=False, ax=axes[0]
+#     )
+#     res[pre + "roc_auc"] = _.roc_auc
+#     _ = precision_recall_curve(
+#         model, X_train, y_train, X_test, y_test, per_class=True, show=False, ax=axes[1]
+#     )
 
-    res[pre + "prec_recall"] = _.score_
-    class_prediction_error(
-        model, X_train, y_train, X_test, y_test, show=False, ax=axes[2]
-    )
-    confusion_matrix(model, X_train, y_train, X_test, y_test, show=False, ax=axes[3])
-    classification_report(
-        model, X_train, y_train, X_test, y_test, support=True, show=False, ax=axes[4]
-    )
-    if return_model:
-        res["model"] = model
-    return res, fig
+#     res[pre + "prec_recall"] = _.score_
+#     class_prediction_error(
+#         model, X_train, y_train, X_test, y_test, show=False, ax=axes[2]
+#     )
+#     confusion_matrix(model, X_train, y_train, X_test, y_test, show=False, ax=axes[3])
+#     classification_report(
+#         model, X_train, y_train, X_test, y_test, support=True, show=False, ax=axes[4]
+#     )
+#     if return_model:
+#         res["model"] = model
+#     return res, fig
 
 
 from sklearn.linear_model import LinearRegression
