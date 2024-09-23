@@ -158,29 +158,29 @@ def quick_classifier(X, y, n_class=5, return_model=False):
 #     return shap_values
 
 
-def calc_regression(df_, flg=0):
-    y = st.selectbox("Y", df_.columns)
-    c = list(df_.columns.drop(y))
-    x = st.multiselect("X", c, c)
-    if len(x) == 0:
-        st.stop()
+# def calc_regression(df_, flg=0):
+#     y = st.selectbox("Y", df_.columns)
+#     c = list(df_.columns.drop(y))
+#     x = st.multiselect("X", c, c)
+#     if len(x) == 0:
+#         st.stop()
 
-    model = LinearRegression(fit_intercept=True)
-    res = summary_model_sk(model, df_[x], df_[y])
-    st.write(model, res["score"])
-    st.json(res, expanded=False)
+#     model = LinearRegression(fit_intercept=True)
+#     res = summary_model_sk(model, df_[x], df_[y])
+#     st.write(model, res["score"])
+#     st.json(res, expanded=False)
 
-    model = LassoCV(fit_intercept=True, alphas=[0, 0.01, 0.1, 1, 10], cv=5)
-    res = summary_model_sk(model, df_[x], df_[y])
-    st.write(model, res["score"])
-    st.json(res, expanded=False)
+#     model = LassoCV(fit_intercept=True, alphas=[0, 0.01, 0.1, 1, 10], cv=5)
+#     res = summary_model_sk(model, df_[x], df_[y])
+#     st.write(model, res["score"])
+#     st.json(res, expanded=False)
 
-    pred = (df_[x] * res["coef"]).sum(axis=1) + res["intercept"]
-    pred.name = "prediction"
-    pred = pd.concat([pred, df_[y]], axis=1)
-    if flg == 1:
-        pred = (1 + pred).cumprod()
-    st.line_chart(pred, height=200)
+#     pred = (df_[x] * res["coef"]).sum(axis=1) + res["intercept"]
+#     pred.name = "prediction"
+#     pred = pd.concat([pred, df_[y]], axis=1)
+#     if flg == 1:
+#         pred = (1 + pred).cumprod()
+#     st.line_chart(pred, height=200)
 
 
 def summary_model_sk(model, x, y):
