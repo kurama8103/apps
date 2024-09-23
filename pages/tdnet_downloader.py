@@ -44,13 +44,13 @@ def tdnet_render():
                 
                 
 
-@st.cache(allow_output_mutation=True,show_spinner=False)
+@st.cache_data(show_spinner=False)
 def tdnet(sel_code):
     td = tdnet_tool.tdNet()
     td.getData_tdnet_KeywordSearch(sel_code)
     return td
 
-@st.cache(show_spinner=False)
+@st.cache_data(show_spinner=False)
 def download(td):
     # PDFダウンロード
     td.df.drop_duplicates(inplace=True)

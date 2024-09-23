@@ -1,3 +1,4 @@
+# %%
 # -*- coding: utf-8 -*-
 
 import pandas as pd
@@ -12,6 +13,7 @@ fn_fred = "files/fred_indices.pickle"
 
 
 def load_csv():
+
     s = "Choose a CSV file. "
     s += "The first column of the file is the date, the first row is the column name."
 
@@ -19,16 +21,44 @@ def load_csv():
         s,
         type="csv",
     )
-    if uploaded_file is None:
-        if "df" in st.session_state:
-            return st.session_state["df"]
-        else:
-            print(sys.argv)
-            # uploaded_file = sys.argv[1]
+
+    if st.checkbox("Use sample data"):
+        st.subheader("Currency data (USDJPY and USDEUR) from FRED")
+        df = get_indices(False)
+        st.session_state["df"] = df
     else:
+        st.session_state["df"] = None
+
+    if uploaded_file is not None:
+        # if "df" in st.session_state:
+            # return st.session_state["df"]
+            # pass
+        # else:
+        #     print(sys.argv)
+            # uploaded_file = sys.argv[1]
+    # else:
         df = pd.read_csv(uploaded_file, index_col=0, parse_dates=True)
         st.session_state["df"] = df
-        return df
+
+    # return df
+    return st.session_state["df"]
+
+    # st.header("US Macroeconomic Data from FRED")
+    # st.json({
+    #     "realgdp": "Real gross domestic product",
+    #     "realcons": "Real personal consumption expenditures",
+    #     "realinv" :"Real gross private domestic investment",
+    #     "realgovt":"Real federal consumption expenditures & gross investment",
+    #     "realdpi": "Real private disposable income",
+    #     "cpi" :"Consumer price index",
+    #     "m1": "M1 nominal money stock",
+    #     "tbilrate": "3-monthtreasury bill",
+    #     "unemp" :"Unemployment rate",
+    #     "pop":"Population",
+    #     "infl":"Inflation rate (cpi base)",
+    #     "realint":"Real interest rate (tbilrate - infl)"
+    #     })
+    # df = pd.concat([load_test_data()[1], load_test_data()[0]], axis=1)
 
 
 def momentum(x, window=None):
@@ -40,7 +70,7 @@ def momentum(x, window=None):
 
 
 def moving_window(x, window: int, func) -> list:
-    return [func(d) for d in sliding_window_view(x, window)]
+    return [func(d) for d in sliding_window_view(x, window, axis=0)]
 
 
 def moving_window_df(x: pd.DataFrame, window: int, func) -> pd.DataFrame:
@@ -63,8 +93,11 @@ def get_indices(flg: bool = False) -> pd.DataFrame:
     end = pd.Timestamp.today() + pd.Timedelta(days=0)
     start = pd.to_datetime("2020-01-01")
     dic_ticker = {
-        "S&P500": "SP500",
-        "NASDAQ_Composit": "NASDAQCOM",
+        # "S&P500": "SP500",
+        # "NASDAQ_Composit": "NASDAQCOM",
+        # "US_10Y_interest_rate":"REAINTRATREARAT10Y",
+        "USDJPY": "DEXJPUS",
+        "USDEUR": "DEXUSEU",
     }
     if os.path.exists(fn_fred) and not (flg):
         print("load")
@@ -227,3 +260,65 @@ def read_eft_df(flg: bool = False):
     else:
         df = create_etf_df()
     return df
+
+
+def load_test_data():
+    from statsmodels.datasets import macrodata
+
+    df = macrodata.load()["data"]
+    df.index = pd.date_range("1959-03-31", periods=len(df), freq="Q")
+    df[["year", "quarter"]] = df[["year", "quarter"]].astype(int)
+    df[df.columns.drop(["year", "quarter"])] = (
+        df[df.columns.drop(["year", "quarter"])].ffill().pct_change()
+    )
+    df = df.replace([np.inf, -np.inf], np.nan).dropna()
+    return df.drop("realgdp", axis=1), df["realgdp"]
+
+
+# import os
+def cd():
+    print(os.getcwd())
+    # os.chdir(os.path.dirname(__file__))
+    # print(os.getcwd())
+
+
+
+def calc_regression(df_, flg=0):
+    y = st.selectbox("Y", df_.columns)
+    c = list(df_.columns.drop(y))
+    x = st.multiselect("X", c, c)
+    if len(x) == 0:
+        st.stop()
+
+    model = LinearRegression(fit_intercept=True, normalize=False)
+    res = summary_model_sk(model, df_[x], df_[y])
+    st.write(model, res["score"])
+    st.json(res, expanded=False)
+
+    model = LassoCV(
+        fit_intercept=True, normalize=False, alphas=[0, 0.01, 0.1, 1, 10], cv=5
+    )
+    res = summary_model_sk(model, df_[x], df_[y])
+    st.write(model, res["score"])
+    st.json(res, expanded=False)
+
+    pred = (df_[x] * res["coef"]).sum(axis=1) + res["intercept"]
+    pred.name = "prediction"
+    pred = pd.concat([pred, df_[y]], axis=1)
+    if flg == 1:
+        pred = (1 + pred).cumprod()
+    st.line_chart(pred, height=200)
+
+
+def summary_model_sk(model, x, y):
+    model.fit(x, y)
+    res = {
+        #        'model': model,
+        "score": model.score(x, y),
+        "intercept": model.intercept_,
+        "coef": model.coef_.tolist(),
+        #        'predict':model.predict(x),
+        "params": model.get_params(),
+    }
+    return res
+

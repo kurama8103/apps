@@ -1,18 +1,20 @@
-import japanize_matplotlib
+
 from pypfopt.efficient_frontier import EfficientFrontier
 from pypfopt import risk_models, expected_returns, plotting
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression, Ridge, Lasso, LassoCV
 
 import pandas as pd
 import streamlit as st
-from st_util import load_csv
+from st_util import load_csv, format_df
 
-import seaborn as sns
 
-sns.set_style("whitegrid")
 
-japanize_matplotlib.japanize()
+plt.rcParams["figure.figsize"] = 8, 4
+# import seaborn as sns
+# sns.set_style("whitegrid")
+
+# import japanize_matplotlib
+# japanize_matplotlib.japanize()
 
 
 def pf_opt(return_index):
@@ -79,24 +81,18 @@ def pf_opt(return_index):
     return res_opt, plt
 
 
-def format_df(df, round=4):
-    df = df.round(round)
-    df.index = df.index.astype(str)
-    return df
-
-
 def render_pf_opt():
     df_ = load_csv()
     if df_ is not None:
-        st.text("graph")
-        flg = show_graphs(df_)
+        # st.text("graph")
+        # flg = show_graphs(df_)
 
-        st.text("Return of assets")
-        show_returns(df_)
+        # st.text("Return of assets")
+        # show_returns(df_)
 
         # calc_regression(df_, flg)
 
-        st.text("mean and volatility")
+        st.markdown("return, volatility and sharpe ratio")
         df_assets = pd.DataFrame(
             {
                 "Expected annual return": expected_returns.mean_historical_return(df_),
@@ -107,86 +103,35 @@ def render_pf_opt():
             }
         )
         df_assets["Sharpe Ratio"] = df_assets.iloc[:, 0] / df_assets.iloc[:, 1]
-        st.dataframe(pd.DataFrame(df_assets), height=200)
+        # st.dataframe(pd.DataFrame(df_assets).round(2))
+        st.bar_chart(format_df(pd.DataFrame(df_assets).T), stack=False, horizontal=True)
 
-        st.text("Optimaze portfolio")
+        st.markdown("### Optimaze portfolio")
         res_opt, plt = pf_opt(df_)
-        st.dataframe(pd.DataFrame(res_opt).drop("weight").T)
 
-        st.text("efficient frontier")
+        st.markdown("portfolio weights")
+        # for k, v in res_opt.items():
+        #     st.write(k)
+        #     st.bar_chart(pd.Series(v["weight"], df_.columns), width=50, stack=True)
+
+        st.bar_chart(
+            pd.DataFrame(
+                {k: v["weight"] for k, v in res_opt.items()}, index=df_.columns
+            ).T.round(2),
+            height=200,
+            horizontal=True,
+        )
+
+        st.markdown("return, volatility and sharpe ratio")
+        # st.dataframe((pd.DataFrame(res_opt).drop("weight").T).round(2).sort_index())
+        st.bar_chart(
+            format_df(pd.DataFrame(res_opt).drop("weight")),
+            stack=False,
+            horizontal=True,
+        )
+        st.markdown("efficient frontier")
         st.pyplot(plt)
-
-        st.text("weight")
-        for k, v in res_opt.items():
-            st.write(k)
-            st.bar_chart(
-                pd.DataFrame(v["weight"], df_.columns),
-                width=50,
-            )
-
-        st.json(res_opt)
-
-
-def show_returns(df_):
-    fig, ax = plt.subplots()
-    _ = df_.iloc[-1] / df_.iloc[[-2, -4, -7, -13]] - 1
-    _.index = ["1M", "3M", "6M", "12M"]
-    sns.heatmap(_.T, center=0, annot=True, fmt=".1%", cmap="PiYG")
-    st.write(fig)
-
-
-def show_graphs(df_):
-    if st.checkbox("price 1"):
-        df_ = df_ / df_.iloc[0]
-
-    flg = 0
-    if st.checkbox("pct_change"):
-        df_ = df_.pct_change().dropna()
-        flg = 1
-
-    st.line_chart(df_, height=200)
-    st.write(format_df(df_))
-    return flg
-
-
-def calc_regression(df_, flg=0):
-    y = st.selectbox("Y", df_.columns)
-    c = list(df_.columns.drop(y))
-    x = st.multiselect("X", c, c)
-    if len(x) == 0:
-        st.stop()
-
-    model = LinearRegression(fit_intercept=True, normalize=False)
-    res = summary_model_sk(model, df_[x], df_[y])
-    st.write(model, res["score"])
-    st.json(res, expanded=False)
-
-    model = LassoCV(
-        fit_intercept=True, normalize=False, alphas=[0, 0.01, 0.1, 1, 10], cv=5
-    )
-    res = summary_model_sk(model, df_[x], df_[y])
-    st.write(model, res["score"])
-    st.json(res, expanded=False)
-
-    pred = (df_[x] * res["coef"]).sum(axis=1) + res["intercept"]
-    pred.name = "prediction"
-    pred = pd.concat([pred, df_[y]], axis=1)
-    if flg == 1:
-        pred = (1 + pred).cumprod()
-    st.line_chart(pred, height=200)
-
-
-def summary_model_sk(model, x, y):
-    model.fit(x, y)
-    res = {
-        #        'model': model,
-        "score": model.score(x, y),
-        "intercept": model.intercept_,
-        "coef": model.coef_.tolist(),
-        #        'predict':model.predict(x),
-        "params": model.get_params(),
-    }
-    return res
+        # st.json(res_opt,expanded=False)
 
 
 render_pf_opt()
