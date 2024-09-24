@@ -118,7 +118,7 @@ def tsa_render(df):
         d.name = code
         st.area_chart((d - 1), 
                       height=h, 
-                    #   stack=False
+                      stack=False
                       )
         #   color=color,
 
@@ -129,7 +129,7 @@ def tsa_render(df):
             (d),
             height=h,
             #   color=color,
-            # stack=False,
+            stack=False,
         )
 
         _ = dfr.asfreq("BM")
@@ -140,7 +140,7 @@ def tsa_render(df):
                 (_),
                 height=h,
                 #  color=color,
-                # stack=False,
+                stack=False,
             )
 
         st.write("histgram (daily return, %)")
@@ -153,7 +153,7 @@ def tsa_render(df):
                 hg,
                 height=h,
                 #  color=color,
-                # stack=False,
+                stack=False,
             )
         else:
             count, division = np.histogram(dfr[code], bins=20)
@@ -176,14 +176,14 @@ def tsa_render(df):
                     st.area_chart(
                         (pd.DataFrame({code: d, bm: _bm[c]})),
                         height=h,
-                        # color=color,
+                        color=color,
                         stack=False,
                     )
                 else:
                     st.area_chart(
                         d,
                         height=h,
-                        #   color=color,
+                          color=color,
                         stack=False,
                     )
             if bm:
