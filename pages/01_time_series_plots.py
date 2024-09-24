@@ -153,7 +153,7 @@ def tsa_render(df):
                 hg,
                 height=h,
                 #  color=color,
-                stack=False,
+                # stack=False,
             )
         else:
             count, division = np.histogram(dfr[code], bins=20)
@@ -183,7 +183,7 @@ def tsa_render(df):
                     st.area_chart(
                         d,
                         height=h,
-                          color=color,
+                        # color=color,
                         stack=False,
                     )
             if bm:

@@ -7,7 +7,6 @@ import streamlit as st
 from st_util import load_csv, format_df
 
 
-
 plt.rcParams["figure.figsize"] = 8, 4
 # import seaborn as sns
 # sns.set_style("whitegrid")
@@ -103,7 +102,9 @@ def render_pf_opt():
         )
         df_assets["Sharpe Ratio"] = df_assets.iloc[:, 0] / df_assets.iloc[:, 1]
         # st.dataframe(pd.DataFrame(df_assets).round(2))
-        st.bar_chart(format_df(pd.DataFrame(df_assets).T), stack=False, horizontal=True)
+        st.bar_chart(format_df(pd.DataFrame(df_assets).T), 
+                    #  stack=False, 
+                     horizontal=True)
 
         st.markdown("### Optimaze portfolio")
         res_opt, plt = pf_opt(df_)
@@ -125,7 +126,7 @@ def render_pf_opt():
         # st.dataframe((pd.DataFrame(res_opt).drop("weight").T).round(2).sort_index())
         st.bar_chart(
             format_df(pd.DataFrame(res_opt).drop("weight")),
-            stack=False,
+            # stack=False,
             horizontal=True,
         )
         st.markdown("efficient frontier")
