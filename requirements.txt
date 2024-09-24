@@ -17,8 +17,8 @@ QuantStats==0.0.58
 plotly==5.5.0
 pandas_datareader
 openpyxl
-# matplotlib==3.7.3
-matplotlib
+matplotlib==3.7.3
+# matplotlib
 altair<5
 lightgbm
 yellowbrick

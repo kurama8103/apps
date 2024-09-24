@@ -15,7 +15,7 @@ from st_util import (
 pd.options.plotting.backend = "matplotlib"
 
 
-# @st.cache_resource(show_spinner=False)
+@st.cache_resource(show_spinner=False)
 def qs_html(
     df: pd.DataFrame,
     download_filename: str,
@@ -177,14 +177,14 @@ def tsa_render(df):
                         (pd.DataFrame({code: d, bm: _bm[c]})),
                         height=h,
                         # color=color,
-                        # stack=False,
+                        stack=False,
                     )
                 else:
                     st.area_chart(
                         d,
                         height=h,
                         #   color=color,
-                        # stack=False,
+                        stack=False,
                     )
             if bm:
                 st.write("returns correlation (rolling {} days)".format(window))
