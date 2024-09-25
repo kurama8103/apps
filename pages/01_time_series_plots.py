@@ -137,10 +137,10 @@ def tsa_render(df):
             st.write("monthly return")
             _.name = code
             st.bar_chart(
-                (_),
+                _,
                 height=h,
                 #  color=color,
-                stack=False,
+                # stack=False,
             )
 
         st.write("histgram (daily return, %)")
