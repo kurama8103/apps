@@ -163,7 +163,7 @@ def tsa_render(df):
                 d.name = code
                 if bm:
                     st.area_chart(
-                        (pd.DataFrame({code: d, bm: _bm[c]})),
+                        (pd.DataFrame({code: d, bm: _bm[c]})).round(4),
                         height=h,
                         color=color,
                         stack=False,
@@ -178,10 +178,8 @@ def tsa_render(df):
             if bm:
                 st.write("returns correlation (rolling {} days)".format(window))
                 st.line_chart(
-                    (
-                        moving_window_df(
-                            dfr[[code, bm]], window, lambda x: np.corrcoef(x)[0, 1]
-                        ),
+                    moving_window_df(
+                        dfr[[code, bm]], window, lambda x: np.corrcoef(x)[0, 1]
                     ),
                     height=h,
                     color=color_set[0],
