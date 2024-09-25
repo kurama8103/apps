@@ -15,7 +15,7 @@ from st_util import (
 pd.options.plotting.backend = "matplotlib"
 
 
-@st.cache_resource(show_spinner=False)
+# @st.cache_resource(show_spinner=False)
 def qs_html(
     df: pd.DataFrame,
     download_filename: str,
@@ -112,8 +112,7 @@ def tsa_render(df):
         st.write("cumulative return")
         d = (dfr + 1).cumprod()
         d.name = code
-        st.area_chart((d - 1).round(4), height=h, stack=False)
-        #   color=color,
+        st.area_chart((d - 1).round(4), height=h, color=color, stack=False)
 
         st.write("draw down")
         d = d / d.rolling(len(d), min_periods=1).max() - 1
