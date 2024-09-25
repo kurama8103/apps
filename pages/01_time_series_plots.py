@@ -27,11 +27,11 @@ def qs_html(
         rf=rf,
         title=df.name,
         download_filename=download_filename,
-        output="tmp/" + download_filename,
+        output=download_filename,
         benchmark=benchmark,
     )
 
-    with open("tmp/" + download_filename) as f:
+    with open(download_filename) as f:
         s = f.read()
 
     return s
