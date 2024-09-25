@@ -126,7 +126,7 @@ def render_pf_opt():
         # st.dataframe((pd.DataFrame(res_opt).drop("weight").T).round(2).sort_index())
         st.bar_chart(
             format_df(pd.DataFrame(res_opt).drop("weight")),
-            # stack=False,
+            stack=False,
             horizontal=True,
         )
         st.markdown("efficient frontier")
