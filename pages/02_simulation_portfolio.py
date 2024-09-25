@@ -103,7 +103,7 @@ def render_pf_opt():
         df_assets["Sharpe Ratio"] = df_assets.iloc[:, 0] / df_assets.iloc[:, 1]
         # st.dataframe(pd.DataFrame(df_assets).round(2))
         st.bar_chart(format_df(pd.DataFrame(df_assets).T), 
-                    #  stack=False, 
+                     stack=False, 
                      horizontal=True)
 
         st.markdown("### Optimaze portfolio")
