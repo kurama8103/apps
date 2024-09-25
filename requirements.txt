@@ -19,7 +19,8 @@ pandas_datareader
 openpyxl
 matplotlib==3.7.3
 # matplotlib
-altair<5
+# altair<5
+altair==5.3.0
 lightgbm
 yellowbrick
 seaborn==0.13.2
