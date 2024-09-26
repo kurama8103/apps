@@ -20,6 +20,10 @@ def load_csv():
         s,
         type="csv",
     )
+    if 'sample' not in st.session_state:
+        st.session_state['sample'] = False
+    if 'df' not in st.session_state:
+        st.session_state['df'] = None
 
     if st.checkbox("Use sample data", value=st.session_state["sample"]):
         st.session_state["str"] = "source: Currency data (USDJPY and USDEUR) from FRED"
