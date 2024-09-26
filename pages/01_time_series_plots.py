@@ -1,21 +1,16 @@
-# %%
-# -*- coding: utf-8 -*-
-
 import quantstats as qs
 import pandas as pd
 import numpy as np
 import streamlit as st
 from st_util import (
     load_csv,
-    get_indices,
-    format_df,
     moving_window_df,
 )
 
 pd.options.plotting.backend = "matplotlib"
 
 
-# @st.cache_resource(show_spinner=False)
+@st.cache_resource(show_spinner=False)
 def qs_html(
     df: pd.DataFrame,
     download_filename: str,
@@ -56,19 +51,15 @@ def _f(x):
     return d
 
 
-def tsa_render(df):
+def main():
     h = 200
     window = 180
     color_set = ["#4BA5FF", "#9eacac"]
-
-    qs.extend_pandas()
-
-    st.markdown("### Time series plots")
-    if df is None:
-        df = get_indices().dropna()
-        st.write("## test data (currency)")
+    df = load_csv()
 
     if df is not None:
+        qs.extend_pandas()
+        st.markdown("### Time series plots")
         code = st.selectbox("select data", df.columns)
         bm = st.selectbox("select benchmark data", [None] + list(df.columns.drop(code)))
 
@@ -102,8 +93,7 @@ def tsa_render(df):
         )
 
         st.write(code)
-        # st.line_chart((df_[code]), height=h, color=color_set[0])
-        st.line_chart((df_[code]).round(4), height=h)
+        st.line_chart((df_[code]).round(4), height=h, color=color_set[0])
 
         if bm:
             st.write(bm)
@@ -208,25 +198,4 @@ def tsa_render(df):
         )
 
 
-df = load_csv()
-if df is None:
-    # sample = """date	A	B
-    # 2020-01-01	100	100
-    # 2020-01-02	105	95
-    # 2020-01-03	108	105
-    # 2020-01-04	105	110
-    # 2020-01-05	110	105
-    # 2020-01-06	120	100
-    # 2020-01-07	110	95
-    # 2020-01-08	100	90
-    # """
-    # t = st.text_area("like csv", sample, placeholder=sample)
-    # df = pd.read_csv(
-    #     io.StringIO(t.strip()), sep=None, index_col=0, parse_dates=True, engine="python"
-    # )
-    df = get_indices(False).dropna()
-    st.write("## test data (currency)")
-    # st.write(format_df(df))
-
-tsa_render(df)
-# %%
+main()

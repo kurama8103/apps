@@ -1,15 +1,11 @@
 from pypfopt.efficient_frontier import EfficientFrontier
 from pypfopt import risk_models, expected_returns, plotting
 import matplotlib.pyplot as plt
-
 import pandas as pd
 import streamlit as st
 from st_util import load_csv, format_df
 
-
 plt.rcParams["figure.figsize"] = 8, 4
-# import seaborn as sns
-# sns.set_style("whitegrid")
 
 # import japanize_matplotlib
 # japanize_matplotlib.japanize()
@@ -79,40 +75,26 @@ def pf_opt(return_index):
     return res_opt, plt
 
 
-def render_pf_opt():
+def main():
     df_ = load_csv()
     if df_ is not None:
-        # st.text("graph")
-        # flg = show_graphs(df_)
-
-        # st.text("Return of assets")
-        # show_returns(df_)
-
-        # calc_regression(df_, flg)
-
-        st.markdown("return, volatility and sharpe ratio")
-        df_assets = pd.DataFrame(
-            {
-                "Expected annual return": expected_returns.mean_historical_return(df_),
-                "annual volatility": (
-                    expected_returns.returns_from_prices(df_).var() * 252
-                )
-                ** 0.5,
-            }
-        )
-        df_assets["Sharpe Ratio"] = df_assets.iloc[:, 0] / df_assets.iloc[:, 1]
-        # st.bar_chart(format_df(pd.DataFrame(df_assets).T), 
-        #              stack=False, 
+        # st.markdown("return, volatility and sharpe ratio")
+        # df_assets = pd.DataFrame(
+        #     {
+        #         "Expected annual return": expected_returns.mean_historical_return(df_),
+        #         "annual volatility": (
+        #             expected_returns.returns_from_prices(df_).var() * 252
+        #         )
+        #         ** 0.5,
+        #     }
+        # )
+        # df_assets["Sharpe Ratio"] = df_assets.iloc[:, 0] / df_assets.iloc[:, 1]
+        # st.bar_chart(format_df(pd.DataFrame(df_assets).T),
+        #              stack=False,
         #              horizontal=True)
 
-        st.markdown("### Optimaze portfolio")
+        st.markdown("Optimazed portfolio weights")
         res_opt, plt = pf_opt(df_)
-
-        st.markdown("portfolio weights")
-        # for k, v in res_opt.items():
-        #     st.write(k)
-        #     st.bar_chart(pd.Series(v["weight"], df_.columns), width=50, stack=True)
-
         st.bar_chart(
             pd.DataFrame(
                 {k: v["weight"] for k, v in res_opt.items()}, index=df_.columns
@@ -122,7 +104,6 @@ def render_pf_opt():
         )
 
         st.markdown("return, volatility and sharpe ratio")
-        # st.dataframe((pd.DataFrame(res_opt).drop("weight").T).round(2).sort_index())
         st.bar_chart(
             format_df(pd.DataFrame(res_opt).drop("weight")),
             stack=False,
@@ -133,4 +114,4 @@ def render_pf_opt():
         # st.json(res_opt,expanded=False)
 
 
-render_pf_opt()
+main()

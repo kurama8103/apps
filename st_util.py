@@ -13,7 +13,6 @@ fn_fred = "files/fred_indices.pickle"
 
 
 def load_csv():
-
     s = "Choose a CSV file. "
     s += "The first column of the file is the date, the first row is the column name."
 
@@ -22,25 +21,22 @@ def load_csv():
         type="csv",
     )
 
-    if st.checkbox("Use sample data"):
-        st.subheader("Currency data (USDJPY and USDEUR) from FRED")
-        df = get_indices(False)
-        st.session_state["df"] = df
+    if st.checkbox("Use sample data", value=st.session_state["sample"]):
+        st.session_state["str"] = "source: Currency data (USDJPY and USDEUR) from FRED"
+        st.session_state["df"] = get_indices(False)
+        st.session_state["sample"] = True
     else:
-        st.session_state["df"] = None
+        st.session_state["sample"] = False
 
     if uploaded_file is not None:
-        # if "df" in st.session_state:
-            # return st.session_state["df"]
-            # pass
-        # else:
-        #     print(sys.argv)
-            # uploaded_file = sys.argv[1]
-    # else:
-        df = pd.read_csv(uploaded_file, index_col=0, parse_dates=True)
-        st.session_state["df"] = df
+        st.session_state["sample"] = False
+        st.session_state["str"] = "source: " + uploaded_file.name
+        st.session_state["df"] = pd.read_csv(
+            uploaded_file, index_col=0, parse_dates=True
+        )
 
-    # return df
+    if "str" in st.session_state:
+        st.subheader(st.session_state["str"])
     return st.session_state["df"]
 
     # st.header("US Macroeconomic Data from FRED")
@@ -282,7 +278,6 @@ def cd():
     # print(os.getcwd())
 
 
-
 def calc_regression(df_, flg=0):
     y = st.selectbox("Y", df_.columns)
     c = list(df_.columns.drop(y))
@@ -321,4 +316,3 @@ def summary_model_sk(model, x, y):
         "params": model.get_params(),
     }
     return res
-

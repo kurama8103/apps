@@ -1,32 +1,27 @@
 import matplotlib.pyplot as plt
-# from sklearn.linear_model import LinearRegression, LassoCV
-
-import pandas as pd
 import streamlit as st
 from st_util import load_csv, format_df
-
-plt.rcParams["figure.figsize"] = 8, 4
-# import seaborn as sns
-# sns.set_style("whitegrid")
 import japanize_matplotlib
 
 japanize_matplotlib.japanize()
+plt.rcParams["figure.figsize"] = 8, 4
+# import pandas as pd
 
 
 def main():
     df_ = load_csv()
     if df_ is not None:
-        df_=df_.dropna()
-        if st.checkbox("Use percentage change (return) data",True):
-            df_=df_.pct_change().dropna()
-            
+        df_ = df_.dropna()
+        if st.checkbox("Use percentage change (return) data", True):
+            df_ = df_.pct_change().dropna()
+
         X = df_.iloc[:, 1:]
         y = df_.iloc[:, 0]
 
         st.text("target: " + y.name)
         st.text("features: " + ", ".join(X.columns.values))
 
-        if X.shape[1]>1:
+        if X.shape[1] > 1:
             st.markdown("features component plot")
             res = vis_features(X, y)
             st.pyplot(res)
@@ -39,6 +34,7 @@ def main():
 
 def vis_features(X, y, figsize=(8, 4)):
     from yellowbrick.features import rank2d, pca_decomposition
+
     # from sklearn.cluster import KMeans
     # from yellowbrick.cluster.elbow import kelbow_visualizer
 
@@ -109,9 +105,6 @@ from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from lightgbm import LGBMRegressor, LGBMClassifier
-# import shap÷\
-
-# shap.initjs()
 
 
 def quick_regressor(X, y, return_model=False):
@@ -130,57 +123,22 @@ def quick_regressor(X, y, return_model=False):
     ]
 
 
-def quick_classifier(X, y, n_class=5, return_model=False):
-    models = [
-        RandomForestClassifier(max_depth=5, criterion="log_loss"),
-        LGBMClassifier(boosting_type="gbdt", max_depth=5, verbose=-1),
-    ]
+# def quick_classifier(X, y, n_class=5, return_model=False):
+#     models = [
+#         RandomForestClassifier(max_depth=5, criterion="log_loss"),
+#         LGBMClassifier(boosting_type="gbdt", max_depth=5, verbose=-1),
+#     ]
 
-    y_, cls = categoricalize(y, n_class)
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y_, test_size=0.2, shuffle=True
-    )
-    return [
-        vis_model_classifier(
-            model, X_train, y_train, X_test, y_test, return_model=return_model
-        )
-        for model in models
-    ] + [cls]
-
-
-# def vis_shap(model, X):
-#     print(model)
-#     explainer = shap.TreeExplainer(model)
-#     shap_values = explainer(X)
-
-#     shap.summary_plot(shap_values)
-#     # shap.summary_plot(shap_values, plot_type="bar")
-#     return shap_values
-
-
-# def calc_regression(df_, flg=0):
-#     y = st.selectbox("Y", df_.columns)
-#     c = list(df_.columns.drop(y))
-#     x = st.multiselect("X", c, c)
-#     if len(x) == 0:
-#         st.stop()
-
-#     model = LinearRegression(fit_intercept=True)
-#     res = summary_model_sk(model, df_[x], df_[y])
-#     st.write(model, res["score"])
-#     st.json(res, expanded=False)
-
-#     model = LassoCV(fit_intercept=True, alphas=[0, 0.01, 0.1, 1, 10], cv=5)
-#     res = summary_model_sk(model, df_[x], df_[y])
-#     st.write(model, res["score"])
-#     st.json(res, expanded=False)
-
-#     pred = (df_[x] * res["coef"]).sum(axis=1) + res["intercept"]
-#     pred.name = "prediction"
-#     pred = pd.concat([pred, df_[y]], axis=1)
-#     if flg == 1:
-#         pred = (1 + pred).cumprod()
-#     st.line_chart(pred, height=200)
+#     y_, cls = categoricalize(y, n_class)
+#     X_train, X_test, y_train, y_test = train_test_split(
+#         X, y_, test_size=0.2, shuffle=True
+#     )
+#     return [
+#         vis_model_classifier(
+#             model, X_train, y_train, X_test, y_test, return_model=return_model
+#         )
+#         for model in models
+#     ] + [cls]
 
 
 def summary_model_sk(model, x, y):
