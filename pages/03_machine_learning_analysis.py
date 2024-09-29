@@ -5,31 +5,54 @@ import japanize_matplotlib
 
 japanize_matplotlib.japanize()
 plt.rcParams["figure.figsize"] = 8, 4
-# import pandas as pd
+import pandas as pd
 
 
 def main():
     df_ = load_csv()
     if df_ is not None:
         df_ = df_.dropna()
+        flg_pct = False
         if st.checkbox("Use percentage change (return) data", True):
             df_ = df_.pct_change().dropna()
+            flg_pct = True
 
-        X = df_.iloc[:, 1:]
-        y = df_.iloc[:, 0]
+        target = st.selectbox("select target", df_.columns)
+        features = st.multiselect(
+            "select features",
+            list(df_.columns.drop(target)),
+            default=list(df_.columns.drop(target)),
+        )
 
-        st.text("target: " + y.name)
-        st.text("features: " + ", ".join(X.columns.values))
-
+        y = df_[target]
+        X = df_[features]
         if X.shape[1] > 1:
             st.markdown("features component plot")
             res = vis_features(X, y)
             st.pyplot(res)
 
-        st.markdown("model: LightGBM")
-        res = quick_regressor(X, y)
+        st.markdown("model: LightGBM, score: R2")
+        res = quick_regressor(X, y, True)
+        st.text([(k,v.round(3)) for k,v in res[1]["r2"].items()])
         st.pyplot(res[1]["fig"])
-        st.json(res[1])
+        # st.json(res[1])
+
+        w = len(df_) * 8 // 10
+        h = 200
+        st.markdown("Predict train data")
+        pred = res[1]["model"].predict(X.head(w))
+        _g = pd.DataFrame(y.head(w)).assign(predict=pred)
+        if flg_pct:
+            _g = (_g + 1).cumprod() - 1
+        st.line_chart(_g, height=h)
+
+        w = len(df_) - w
+        st.markdown("Predict test data")
+        pred = res[1]["model"].predict(X.tail(w))
+        _g = pd.DataFrame(y.tail(w)).assign(predict=pred)
+        if flg_pct:
+            _g = (_g + 1).cumprod() - 1
+        st.line_chart(_g, height=h)
 
 
 def vis_features(X, y, figsize=(8, 4)):

@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import streamlit as st
-from st_util import load_csv, load_test_data, get_indices
+from st_util import load_csv
 
-# import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 

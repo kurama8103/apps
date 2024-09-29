@@ -2,13 +2,15 @@ from pypfopt.efficient_frontier import EfficientFrontier
 from pypfopt import risk_models, expected_returns, plotting
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 import streamlit as st
 from st_util import load_csv, format_df
 
 plt.rcParams["figure.figsize"] = 8, 4
 
-# import japanize_matplotlib
-# japanize_matplotlib.japanize()
+import japanize_matplotlib
+
+japanize_matplotlib.japanize()
 
 
 def pf_opt(return_index):
@@ -75,6 +77,15 @@ def pf_opt(return_index):
     return res_opt, plt
 
 
+# from numpy.linalg import inv
+
+
+# def wgt_kelly(mean, covariance):
+#     wgt_kelly = inv(covariance).dot(mean).clip(min=0)
+#     wgt_kelly /= sum(wgt_kelly)
+#     return wgt_kelly
+
+
 def main():
     df_ = load_csv()
     if df_ is not None:
@@ -95,23 +106,36 @@ def main():
 
         st.markdown("Optimazed portfolio weights")
         res_opt, plt = pf_opt(df_)
+        # mu = expected_returns.mean_historical_return(df_)
+        # covar = risk_models.sample_cov(df_)
+        # wgt_k = wgt_kelly(mu, covar)
+        # pf_k = [
+        #     wgt_k.dot(mu),
+        #     np.sqrt(wgt_k.dot(covar).dot(wgt_k)),
+        #     (wgt_k.dot(mu) - 0.02) / np.sqrt(wgt_k.dot(covar).dot(wgt_k)),
+        # ]
+
         st.bar_chart(
             pd.DataFrame(
                 {k: v["weight"] for k, v in res_opt.items()}, index=df_.columns
-            ).T.round(2),
+            )
+            # .assign(kelly=wgt_k)
+            .T.round(2),
             height=200,
             horizontal=True,
         )
 
         st.markdown("return, volatility and sharpe ratio")
         st.bar_chart(
-            format_df(pd.DataFrame(res_opt).drop("weight")),
+            format_df(pd.DataFrame(res_opt).drop("weight")
+                    #   .assign(kelly=pf_k)
+                      ),
             stack=False,
             horizontal=True,
         )
         st.markdown("efficient frontier")
         st.pyplot(plt)
-        # st.json(res_opt,expanded=False)
+        st.json(res_opt, expanded=False)
 
 
 main()
