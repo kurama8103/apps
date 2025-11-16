@@ -1,0 +1,8 @@
+gunicorn
+pandas==1.5.3
+numpy==1.26.4
+streamlit==1.38.0
+-e git+https://github.com/kurama8103/tdnet_tool.git#egg=tdnet_tool
+seaborn==0.13.2
+matplotlib==3.7.3
+japanize_matplotlib
