@@ -1,9 +1,9 @@
 import sys
 import json
-from src.config import config
-from src.data_fetcher.gmo_fetcher import get_gmo_orderbook
-from src.data_fetcher.bitbank_fetcher import get_bitbank_orderbook
-from src.arbitrage_calculator.arbitrage_calculator import find_arbitrage_opportunity
+from .src.config import config
+from .src.data_fetcher.gmo_fetcher import get_gmo_orderbook
+from .src.data_fetcher.bitbank_fetcher import get_bitbank_orderbook
+from .src.arbitrage_calculator.arbitrage_calculator import find_arbitrage_opportunity
 
 def main():
     """
