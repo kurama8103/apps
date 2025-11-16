@@ -5,6 +5,8 @@ import pandas_datareader.data as web
 import os
 import numpy as np
 from numpy.lib.stride_tricks import sliding_window_view
+import io
+import csv
 
 fn_fred = "files/fred_indices.pickle"
 
@@ -24,7 +26,7 @@ def load_csv():
 
     if st.checkbox("Use sample data", value=st.session_state["sample"]):
         st.session_state["str"] = "source: Currency data from FRED"
-        st.session_state["df"] = get_indices_fred(fn_fred,False)
+        st.session_state["df"] = get_indices_fred(fn_fred, False)
         st.session_state["sample"] = True
     else:
         st.session_state["sample"] = False
@@ -36,6 +38,14 @@ def load_csv():
             uploaded_file, index_col=0, parse_dates=True
         )
 
+    # st.session_state["flg_pct"] = False
+    # if flg_pct:
+    #     if st.checkbox("Use percentage change (return) data", flg_pct):
+    #         df_ = df_.pct_change().dropna()
+    #         st.session_state["flg_pct"]=True
+    #     else:
+    #         st.session_state["flg_pct"] = False
+    # st.write(st.session_state["flg_pct"])
     if "str" in st.session_state:
         st.subheader(st.session_state["str"])
     return st.session_state["df"]
@@ -137,6 +147,7 @@ def calc_regression(df_, flg=0):
         pred = (1 + pred).cumprod()
     st.line_chart(pred, height=200)
 
+
 def summary_model_sk(model, x, y):
     model.fit(x, y)
     res = {
@@ -148,3 +159,34 @@ def summary_model_sk(model, x, y):
         "params": model.get_params(),
     }
     return res
+
+
+def class_to_csv(class_):
+    import csv
+    import io
+
+    f = io.StringIO()
+    writer = csv.DictWriter(f, fieldnames=class_.__dict__.keys())
+    writer.writeheader()
+    writer.writerow(class_.__dict__)
+    return f
+
+
+def flg_use_pct(df, checkbox_flg=True):
+    flg_pct = False
+    if st.checkbox("Use percentage change (return) data", checkbox_flg):
+        df = df.pct_change().dropna()
+        flg_pct = True
+    return df, flg_pct
+
+
+def multiselect_X_y(df):
+    target = st.selectbox("select target", df.columns)
+    features = st.multiselect(
+        "select features",
+        list(df.columns.drop(target)),
+        default=list(df.columns.drop(target)),
+    )
+    y = df[target]
+    X = df[features]
+    return X, y

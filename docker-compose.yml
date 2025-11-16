@@ -1,0 +1,13 @@
+version: '3'
+services:
+  stream01:
+    image: streamlit
+    build: .
+    container_name: 'stream01'
+    tty: true
+    stdin_open: true
+    volumes: 
+      - $PWD:$PWD
+    ports:
+      - 8502:8502
+    command: streamlit run index.py --server.port=8502 --server.address=0.0.0.0

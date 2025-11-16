@@ -46,7 +46,7 @@ df = load_csv()
 if df is not None:
     st.dataframe(
         df.style.set_properties(
-            **{"background-color": "lightyellow"}, subset=df.columns[0]
+            **{"background-color": "yellow"}, subset=df.columns[0]
         )
     )
     st.write("Pairplot first 5 columns")
