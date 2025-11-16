@@ -13,25 +13,7 @@
 
 ## 3. セットアップ方法
 
-プロジェクトは`core`と`streamlit_app`の2つのコンポーネントに分かれており、それぞれ独立した依存関係を持っています。
-
-### 3.1. コア裁定取引ツール
-
-1.  **`core`ディレクトリに移動します:**
-    ```bash
-    cd core
-    ```
-2.  **依存関係をインストールします:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-### 3.2. Streamlit Webアプリケーション
-
-1.  **`streamlit_app`ディレクトリに移動します:**
-    ```bash
-    cd streamlit_app
-    ```
+1.  **プロジェクトのルートディレクトリに移動します。**
 2.  **依存関係をインストールします:**
     ```bash
     pip install -r requirements.txt
@@ -54,6 +36,6 @@ python -m core.run_arbitrage
 1.  **プロジェクトのルートディレクトリにいることを確認します。**
 2.  **以下のコマンドでStreamlitアプリを起動します:**
     ```bash
-    streamlit run streamlit_app/index.py
+    streamlit run index.py
     ```
 3.  WebブラウザでStreamlitから提供されたローカルURL（通常は `http://localhost:8501`）を開きます。
