@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import streamlit as st
-from st_util import load_csv
+from src.st_util import load_csv
 
 import seaborn as sns
 import matplotlib.pyplot as plt

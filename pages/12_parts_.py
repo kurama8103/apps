@@ -1,4 +1,4 @@
-from st_util import load_csv, class_to_csv, flg_use_pct, multiselect_X_y
+from src.st_util import load_csv, class_to_csv, flg_use_pct, multiselect_X_y
 import streamlit as st
 import pandas as pd
 

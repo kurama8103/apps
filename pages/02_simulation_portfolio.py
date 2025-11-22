@@ -2,7 +2,7 @@ from pypfopt.efficient_frontier import EfficientFrontier
 from pypfopt import risk_models, expected_returns, plotting
 import pandas as pd
 import streamlit as st
-from st_util import load_csv, format_df
+from src.st_util import load_csv, format_df
 import matplotlib.pyplot as plt
 plt.rcParams["figure.figsize"] = 8, 4
 

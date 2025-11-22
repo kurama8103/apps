@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import streamlit as st
-from st_util import load_csv, format_df
+from src.st_util import load_csv, format_df
 import japanize_matplotlib
 
 japanize_matplotlib.japanize()

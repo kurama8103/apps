@@ -3,7 +3,7 @@
 import unicodedata
 import plotly.express as px
 import streamlit as st
-from st_util import read_eft_df
+from src.st_util import read_eft_df
 
 ### pd.options.plotting.backend = "plotly"
 

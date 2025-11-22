@@ -2,7 +2,7 @@ import quantstats as qs
 import pandas as pd
 import numpy as np
 import streamlit as st
-from st_util import (
+from src.st_util import (
     load_csv,
     moving_window_df,
 )
