@@ -7,3 +7,4 @@ seaborn==0.13.2
 matplotlib==3.7.3
 japanize_matplotlib
 requests
+plotly
