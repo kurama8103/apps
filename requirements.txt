@@ -10,3 +10,4 @@ requests
 plotly
 PyPortfolioOpt
 quantstats
+IPython
