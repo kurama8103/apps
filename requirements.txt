@@ -9,3 +9,4 @@ japanize_matplotlib
 requests
 plotly
 PyPortfolioOpt
+quantstats
