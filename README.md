@@ -20,7 +20,7 @@ streamlit run app.py
 
 - `app.py`: トップページ（全体インデックス）
 - `pages/01_Overview.py`: KPIサマリ例
-- `pages/02_Data_Explorer.py`: CSVアップロード / クリップボード貼り付け入力 + PCA分析
+- `pages/02_Data_Explorer.py`: CSVアップロード / クリップボード貼り付け / sklearn toy data 入力 + PCA分析
 - `pages/03_Settings.py`: 設定フォームの雛形
 
 ## 構成ドキュメント
