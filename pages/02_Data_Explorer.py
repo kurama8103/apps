@@ -68,7 +68,7 @@ if source_df is None:
     st.stop()
 
 st.subheader("Raw Data")
-st.dataframe(source_df, width='stretch')
+st.dataframe(source_df, use_container_width=True)
 
 numeric_df = source_df.select_dtypes(include=["number"]).copy()
 if numeric_df.shape[1] < 2:
@@ -100,7 +100,7 @@ variance_df = pd.DataFrame(
         "ratio": pca.explained_variance_ratio_,
     }
 )
-st.dataframe(variance_df, width='stretch')
+st.dataframe(variance_df, use_container_width=True)
 
 bar_chart = (
     alt.Chart(variance_df)
@@ -108,7 +108,7 @@ bar_chart = (
     .encode(x="component:N", y=alt.Y("ratio:Q", title="Explained Variance Ratio"))
     .properties(height=300)
 )
-st.altair_chart(bar_chart, width='stretch')
+st.altair_chart(bar_chart, use_container_width=True)
 
 st.subheader("PCA Scatter (PC1 vs PC2)")
 color_column = st.selectbox(
@@ -133,7 +133,7 @@ scatter = (
     .interactive()
 )
 
-st.altair_chart(scatter, width='stretch')
+st.altair_chart(scatter, use_container_width=True)
 
 st.subheader("PCA Output")
-st.dataframe(pca_df, width='stretch')
+st.dataframe(pca_df, use_container_width=True)
