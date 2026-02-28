@@ -27,6 +27,7 @@
   - CSVファイルのアップロード
   - クリップボードの内容をCSVとしてテキストエリアに貼り付け
   - sklearn toy dataset（iris / wine / breast_cancer）を選択
+
 - 処理
   - 数値カラムを自動抽出
   - 欠損値は平均値補完

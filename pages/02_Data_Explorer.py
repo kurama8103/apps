@@ -39,7 +39,7 @@ input_mode = st.radio(
     "入力ソース",
     options=["CSV Upload", "Paste CSV", "sklearn Toy Data"],
     horizontal=True,
-)
+
 
 source_df: pd.DataFrame | None = None
 
